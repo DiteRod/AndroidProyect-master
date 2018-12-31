@@ -80,7 +80,7 @@ public class Main extends AppCompatActivity{
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void onClick(View v){
         foroFragment.onClick(v);
-        eventosFragment.onClick(v);
+        //eventosFragment.onClick(v);
         cursosFragment.onClick(v);
 
     }

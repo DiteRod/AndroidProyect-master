@@ -36,33 +36,40 @@ public class EventsFragment extends Fragment implements AsyncResponse{
         view = inflater.inflate(R.layout.fragment_eventos, container, false);
         mostrarConsulta = view.findViewById(R.id.resultadoConsulta);
         btnConsultar = view.findViewById(R.id.btnConsulta);
+        cargar();
 
 
         return view;
 
     }
 
+    public void cargar(){
+        ServiceManager serviceManager = new ServiceManager(this.getActivity(),this);
+        serviceManager.callService("http://192.168.0.2/cursoPHP/connect.php");
+
+    }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
+
+    /*@RequiresApi(api = Build.VERSION_CODES.N)
     public void onClick(View v) {
         if(v.getId() == R.id.btnConsulta) {
 
             int randomNum = (int) (24*Math.random()+1);
 
             ServiceManager serviceManager = new ServiceManager(this.getActivity(),this);
-            serviceManager.callService("http://146.83.216.206/info104/resp/getCourseList.php?tags=");
+            serviceManager.callService("http://192.168.0.2/cursoPHP/connect.php");
 
         }
 
-    }
+    }*/
 
     @Override
     public void obtainServiceResult(JSONObject jsonObject) {
         try
         {
 
-            JSONArray jsonArray = jsonObject.getJSONArray("courses");
+            JSONArray jsonArray = jsonObject.getJSONArray("people");
             mostrarConsulta.setText(jsonArray.toString());
             /*String text = "";
             for(int i=0;i<jsonArray.length();i++){

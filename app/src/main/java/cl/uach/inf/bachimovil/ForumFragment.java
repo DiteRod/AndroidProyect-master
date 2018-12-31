@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForumFragment extends Fragment {
+public class ForumFragment extends Fragment implements AsyncResponse {
     String response;
     String usr;
     EditText titulo, descripcion,taqs;
@@ -73,7 +74,27 @@ public class ForumFragment extends Fragment {
 
     }
 
-    public void cargar(){
+    public void cargar() {
+        ServiceManager serviceManager = new ServiceManager(this.getActivity(),this);
+        serviceManager.callService("http://192.168.0.11/cursoPHP/connect.php");
+
+
+    }
+    public void obtainServiceResult(JSONObject jsonObject) {
+        try
+        {
+            JSONArray jsonArray = jsonObject.getJSONArray("posts");
+            CargarListView(jsonArray);
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    /*public void cargar(){
         try {
             FileInputStream is = getContext().openFileInput("Post.json");
             String result = IOHelper.stringFromStream(is);
@@ -85,7 +106,7 @@ public class ForumFragment extends Fragment {
         }
 
 
-    }
+    }*/
     public void CargarListView(JSONArray posts){
         POSTS = posts;
         ArrayList<Post> Listado= new ArrayList<>();
@@ -164,45 +185,28 @@ public class ForumFragment extends Fragment {
         List = Lista;
         adapter = new Adaptador(List);
         recycler.setAdapter(adapter);
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Post post  = (Post) List.get(recycler.getChildAdapterPosition(v));
+                Intent visorDetalles = new Intent(v.getContext(),Forum.class);
+                visorDetalles.putExtra("title",post.getTitulo());
+                visorDetalles.putExtra("description",post.getDescripcion());
+                visorDetalles.putExtra("id_post",post.getId());
+                startActivity(visorDetalles);
+
+
+
+
+
+            }
+        });
+
+
     }
 
 
 }
-
-
-/*public void onClick(View v) {
-        if (v.getId() == R.id.obtenerDatos) {
-            try {
-                FileInputStream is = getContext().openFileInput("Post.json");
-                String result = IOHelper.stringFromStream(is);
-
-                JSONArray posts = new JSONArray(result);
-                mostrarConsulta.setText(posts.toString());
-            } catch (JSONException e) {
-
-            } catch (FileNotFoundException k) {
-            }
-        } else if (v.getId() == R.id.enviarDatos) {
-            /*String title = "titulo";
-            String description = "description";
-            String taqq = "taqs";
-            ArrayList<String> taq;
-            taq = IOHelper.StringtoArrayList(taqq);
-
-
-            try {
-               /* JSONObject obj = new JSONObject();
-                obj.put("titulo","Titulo");
-                obj.put("descripcion","Desarrollo");
-                obj.put("taqs","Taqs");
-                arr.put(obj);
-
-            }catch(JSONException e){}
-            IOHelper.writeToFile(this.getActivity(),"Post.json",arr.toString());
-        }
-    }*/
-
-
 
 
     //Servidor
