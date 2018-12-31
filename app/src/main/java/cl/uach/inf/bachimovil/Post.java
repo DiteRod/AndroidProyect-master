@@ -1,5 +1,5 @@
 package cl.uach.inf.bachimovil;
-
+//lola
 public class Post {
     private String id;
     private String titulo;
