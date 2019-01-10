@@ -42,7 +42,7 @@ public class Main extends AppCompatActivity{
         planFragment = new PlanFragment();
         materialFragment = new MaterialFragment();
 
-        setFragment(eventosFragment);
+        setFragment(foroFragment);
 
         mMainNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -84,5 +84,7 @@ public class Main extends AppCompatActivity{
         cursosFragment.onClick(v);
 
     }
+
+
 
 }

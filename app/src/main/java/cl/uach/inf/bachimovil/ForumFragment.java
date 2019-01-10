@@ -1,7 +1,9 @@
 package cl.uach.inf.bachimovil;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -31,7 +34,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ForumFragment extends Fragment {
+public class ForumFragment extends Fragment implements AsyncResponse {
     String response;
     String usr;
     EditText titulo, descripcion,taqs;
@@ -45,35 +48,155 @@ public class ForumFragment extends Fragment {
     ArrayList<Post> List;
     Adaptador adapter;
     RecyclerView recycler;
-    EditText Taqs;
+    TextView Taqs;
     Button Buscardatos;
     FloatingActionButton button;
+    ImageButton tagsButton;
+    TextView selectedTags;
+    boolean[] checkedTags;
+    ArrayList<Integer> userTags;
+    String[] TAG_LIST = {"Video","Guía","Tarea","Consulta","Álgebra","Geometría", "Cálculo","Lineal","Química", "Dyre",
+            "Cálculo 2","EDO","Física 1","Física 2","Metodos Numéricos","Estadística","Física 3"};
+
+    //String [] TAG_LIST;
 
 
     public ForumFragment() {
         // Required empty public constructor
     }
-
-
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+        @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_foro, container, false);
-        //mostrarConsulta = view.findViewById(R.id.resultadoConsulta_a);
-        //btnConsultar = view.findViewById(R.id.obtenerDatos);
-        //btnInsertar = view.findViewById(R.id.enviarDatos);
         recycler = (RecyclerView) view.findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-        Taqs = (EditText) view.findViewById(R.id.taqsDeBusqueda_b);
+        tagsButton = (ImageButton) view.findViewById(R.id.btn);
+        Taqs = (TextView) view.findViewById(R.id.taqsDeBusqueda_b);
+        userTags = new ArrayList<>();
+
         Buscardatos = view.findViewById(R.id.buscarDatos);
         button = view.findViewById(R.id.button);
+        checkedTags = new boolean[TAG_LIST.length];
+
+
+
+
+
+        tagsButton.setOnClickListener(new View.OnClickListener(){
+
+
+
+            @Override
+            public void onClick(View view){
+
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(ForumFragment.this.getContext());
+                mBuilder.setTitle("Tags");
+                mBuilder.setMultiChoiceItems(TAG_LIST, checkedTags, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int position, boolean isChecked) {
+
+                        if(isChecked){
+
+                            //if(!userTags.contains(position))
+                                userTags.add(position);
+                            //else userTags.remove(position);
+
+                        }
+                        else{
+                            userTags.remove(userTags.indexOf(position));
+                        }
+
+                    }
+                });
+
+                mBuilder.setCancelable(false);
+                mBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int position) {
+                        String selectedTagsText = "";
+
+                        for (int i = 0; i < userTags.size(); i++){
+
+                            selectedTagsText += TAG_LIST[userTags.get(i)];
+                            if (i != userTags.size() - 1) selectedTagsText += ", ";
+
+                        }
+                        Taqs.setText(selectedTagsText);
+
+                    }
+                });
+
+                mBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                mBuilder.setNeutralButton("Limpiar" +
+                        "", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        for (int i = 0; i < checkedTags.length; i++) checkedTags[i] = false;
+                        userTags.clear();
+                        Taqs.setText("");
+
+                    }
+                });
+
+                AlertDialog mDialog = mBuilder.create();
+                mDialog.show();
+
+            }
+
+        });
+
+
+
+
+
         cargar();
         //btnConsultar = view.findViewById(R.id.btnConsulta_a);
+
+
+
+
+
+
+
+
+
         return view;
+    }
+
+    private void cargar() {
+        ServiceManager serviceManager = new ServiceManager(this.getActivity(),this);
+        serviceManager.callService("http://172.20.53.52/cursoPHP/connect.php");
+
+    }
+    public void obtainServiceResult(JSONObject jsonObject) {
+        try
+        {
+            JSONArray jsonArray = jsonObject.getJSONArray("posts");
+            CargarListView(jsonArray);
+
+
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
-    public void cargar(){
+
+
+    /*public void cargar(){
         try {
             FileInputStream is = getContext().openFileInput("Post.json");
             String result = IOHelper.stringFromStream(is);
@@ -85,7 +208,7 @@ public class ForumFragment extends Fragment {
         }
 
 
-    }
+    }*/
     public void CargarListView(JSONArray posts){
         POSTS = posts;
         ArrayList<Post> Listado= new ArrayList<>();
@@ -164,6 +287,25 @@ public class ForumFragment extends Fragment {
         List = Lista;
         adapter = new Adaptador(List);
         recycler.setAdapter(adapter);
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Post post  = (Post) List.get(recycler.getChildAdapterPosition(v));
+                Intent visorDetalles = new Intent(v.getContext(),Forum.class);
+                visorDetalles.putExtra("title",post.getTitulo());
+                visorDetalles.putExtra("description",post.getDescripcion());
+                visorDetalles.putExtra("id_post",post.getId());
+                startActivity(visorDetalles);
+
+
+
+
+
+            }
+        });
+
+
+
     }
 
 

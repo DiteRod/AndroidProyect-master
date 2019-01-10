@@ -38,16 +38,18 @@
                 android:textColor="#0000ff"
                 android:textColorLink="#0000ff" />
 
+            <TextView
+                android:layout_width="385dp"
+                android:layout_height="1dp"
+                android:layout_below="@+id/Texti"
+                android:background="@color/colorPrimary" />
+
         </LinearLayout>
 
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@+id/Texti"
-        android:background="@color/colorPrimary" />
+
 
 
 

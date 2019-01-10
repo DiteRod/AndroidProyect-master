@@ -9,11 +9,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
-        <EditText
+        <ImageButton
+            android:id="@+id/btn"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="24dp"
+            android:background="#3F51B5"
+            android:src="@drawable/ic_reorder_black_24dp"
+            android:tint="@android:color/white"
+            tools:layout_editor_absoluteX="163dp"
+            tools:layout_editor_absoluteY="397dp" />
+
+        <TextView
             android:id="@+id/taqsDeBusqueda_b"
-            android:layout_width="wrap_content"
+            android:layout_width="173dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
@@ -21,13 +35,12 @@
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:ems="10"
-            android:hint="taqs"
+            android:hint="Taqs"
             android:inputType="textPersonName"
             app:layout_constraintEnd_toStartOf="@+id/button"
             app:layout_constraintHorizontal_bias="0.578"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
         <Button
             android:id="@+id/buscarDatos"
             android:layout_width="wrap_content"
@@ -42,12 +55,10 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.117" />
-    </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textView2"
